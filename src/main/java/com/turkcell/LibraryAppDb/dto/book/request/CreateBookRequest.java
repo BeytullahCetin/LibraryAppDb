@@ -2,8 +2,12 @@ package com.turkcell.LibraryAppDb.dto.book.request;
 
 import java.util.Date;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class CreateBookRequest {
+	@NotBlank
 	private String title;
+	@NotBlank
 	private String isbn;
 	private int pageCount;
 	private Date publishDate;

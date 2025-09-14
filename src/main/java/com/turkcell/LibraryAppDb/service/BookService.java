@@ -1,6 +1,7 @@
 package com.turkcell.LibraryAppDb.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.webjars.NotFoundException;
 
 import com.turkcell.LibraryAppDb.dto.book.request.CreateBookRequest;
@@ -14,7 +15,10 @@ import com.turkcell.LibraryAppDb.entity.Language;
 import com.turkcell.LibraryAppDb.entity.Publisher;
 import com.turkcell.LibraryAppDb.repository.BookRepository;
 
+import jakarta.validation.Valid;
+
 @Service
+@Validated
 public class BookService {
 	private final BookRepository bookRepository;
 	private final LanguageService languageService;
@@ -27,7 +31,7 @@ public class BookService {
 		this.publisherService = publisherService;
 	}
 
-	public CreatedBookResponse add(CreateBookRequest bookDto) {
+	public CreatedBookResponse add(@Valid CreateBookRequest bookDto) {
 		Book book = new Book();
 		book.setTitle(bookDto.getTitle());
 		book.setIsbn(bookDto.getIsbn());
@@ -56,7 +60,7 @@ public class BookService {
 		return new GetByIdBookResponse(book.getTitle(), book.getIsbn(), book.getPageCount(), book.getPublishDate());
 	}
 
-	public UpdatedBookResponse update(int id, UpdateBookRequest bookDto) {
+	public UpdatedBookResponse update(int id, @Valid UpdateBookRequest bookDto) {
 		Book book = bookRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Bu id ile book bulunamadı"));
 

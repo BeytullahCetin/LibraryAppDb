@@ -3,6 +3,7 @@ package com.turkcell.LibraryAppDb.service;
 import java.util.Date;
 
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.webjars.NotFoundException;
 
 import com.turkcell.LibraryAppDb.dto.customer.request.CreateCustomerRequest;
@@ -14,7 +15,10 @@ import com.turkcell.LibraryAppDb.dto.customer.response.UpdatedCustomerResponse;
 import com.turkcell.LibraryAppDb.entity.Customer;
 import com.turkcell.LibraryAppDb.repository.CustomerRepository;
 
+import jakarta.validation.Valid;
+
 @Service
+@Validated
 public class CustomerService {
 
 	private final CustomerRepository customerRepository;
@@ -23,7 +27,8 @@ public class CustomerService {
 		this.customerRepository = customerRepository;
 	}
 
-	public CreatedCustomerResponse add(CreateCustomerRequest customerDto) {
+	public CreatedCustomerResponse add(@Valid CreateCustomerRequest customerDto) {
+
 		Customer customer = new Customer();
 		customer.setName(customerDto.getName());
 		customer.setEmail(customerDto.getEmail());
@@ -42,7 +47,7 @@ public class CustomerService {
 		return new GetByIdCustomerResponse(customer.getName(), customer.getPhone(), customer.getEmail());
 	}
 
-	public UpdatedCustomerResponse update(int id, UpdateCustomerRequest customerDto) {
+	public UpdatedCustomerResponse update(int id, @Valid UpdateCustomerRequest customerDto) {
 		Customer customer = customerRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Bu id ile customer bulunamadı"));
 		customer.setName(customerDto.getName());
