@@ -24,6 +24,10 @@ public class LibraryAppDbApplication {
 	// En az 2 entity icin custom query yazilacak. (Plan bizde)
 	// Her istekte requestleri validasyon kurallariyla koruyalim.
 
+	// -------
+
+	// 1 tane servis'e automapper entegre et.
+
 	public static void main(String[] args) {
 		SpringApplication.run(LibraryAppDbApplication.class, args);
 	}

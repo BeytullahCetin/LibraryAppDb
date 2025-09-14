@@ -13,6 +13,7 @@ import com.turkcell.LibraryAppDb.dto.customer.response.DeletedCustomerResponse;
 import com.turkcell.LibraryAppDb.dto.customer.response.GetByIdCustomerResponse;
 import com.turkcell.LibraryAppDb.dto.customer.response.UpdatedCustomerResponse;
 import com.turkcell.LibraryAppDb.entity.Customer;
+import com.turkcell.LibraryAppDb.mapper.CustomerMapper;
 import com.turkcell.LibraryAppDb.repository.CustomerRepository;
 
 import jakarta.validation.Valid;
@@ -28,16 +29,13 @@ public class CustomerService {
 	}
 
 	public CreatedCustomerResponse add(@Valid CreateCustomerRequest customerDto) {
+		CustomerMapper customerMapper = CustomerMapper.INSTANCE;
 
-		Customer customer = new Customer();
-		customer.setName(customerDto.getName());
-		customer.setEmail(customerDto.getEmail());
-		customer.setPhone(customerDto.getPhone());
+		Customer customer = customerMapper.createCustomerRequestToCustomer(customerDto);
 		customer.setRegisterDate(new Date());
-
 		customerRepository.save(customer);
 
-		return new CreatedCustomerResponse(customer.getName(), customer.getPhone(), customer.getEmail());
+		return customerMapper.customerToCreatedCustomerResponse(customer);
 	}
 
 	public GetByIdCustomerResponse getById(int id) {
@@ -50,13 +48,12 @@ public class CustomerService {
 	public UpdatedCustomerResponse update(int id, @Valid UpdateCustomerRequest customerDto) {
 		Customer customer = customerRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Bu id ile customer bulunamadı"));
-		customer.setName(customerDto.getName());
-		customer.setEmail(customerDto.getEmail());
-		customer.setPhone(customerDto.getPhone());
 
+		CustomerMapper customerMapper = CustomerMapper.INSTANCE;
+		customer = customerMapper.updateCustomerRequestToCustomer(customerDto);
 		customerRepository.save(customer);
 
-		return new UpdatedCustomerResponse(customer.getName(), customer.getPhone(), customer.getEmail());
+		return customerMapper.customerToUpdatedCustomerResponse(customer);
 
 	}
 
