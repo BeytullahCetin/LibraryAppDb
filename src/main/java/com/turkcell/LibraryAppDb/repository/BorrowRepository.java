@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.turkcell.LibraryAppDb.entity.Borrow;
 
 public interface BorrowRepository extends JpaRepository<Borrow, Integer> {
+    long countByCustomer_IdAndReturnDateIsNull(int customerId);
 
 }

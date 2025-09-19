@@ -6,4 +6,5 @@ import com.turkcell.LibraryAppDb.entity.Customer;
 
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
+	boolean existsByEmailIgnoreCase(String email);
 }

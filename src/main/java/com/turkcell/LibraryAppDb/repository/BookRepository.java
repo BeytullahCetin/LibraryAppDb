@@ -16,4 +16,5 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 	@Query("select b from Book b where lower(b.language.name) = lower(:languageName)")
 	List<Book> findByLanguageName(@Param("languageName") String languageName);
 
+	boolean existsByIsbnIgnoreCase(String isbn);
 }
