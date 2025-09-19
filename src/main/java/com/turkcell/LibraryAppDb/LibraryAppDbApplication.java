@@ -9,7 +9,11 @@ public class LibraryAppDbApplication {
 	// TODO: 1
 	/*
 	 * - DTO - Mapper
+	 * BookCopy, Borrow(Alişan)
+	 * Fine, Reservation(Beytullah)
 	 * - REPOSITRY - Rules
+	 * Book, Borrow, Customer(Hakkı)
+	 * Reservation, Fine(Beytullah)
 	 * - SERVICE - Controller
 	 */
 
