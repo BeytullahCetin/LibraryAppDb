@@ -23,6 +23,10 @@ public class Borrow {
 
 	@Temporal(TemporalType.DATE)
 	private Date borrDate;
+
+	@Temporal(TemporalType.DATE)
+	private Date dueDate;
+
 	@Temporal(TemporalType.DATE)
 	private Date returnDate;
 
@@ -83,6 +87,14 @@ public class Borrow {
 
 	public void setFines(List<Fine> fines) {
 		this.fines = fines;
+	}
+
+	public Date getDueDate() {
+		return dueDate;
+	}
+
+	public void setDueDate(Date dueDate) {
+		this.dueDate = dueDate;
 	}
 
 }

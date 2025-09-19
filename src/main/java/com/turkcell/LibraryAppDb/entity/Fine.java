@@ -1,7 +1,8 @@
 package com.turkcell.LibraryAppDb.entity;
 
 import java.util.Date;
-import java.util.List;
+
+import com.turkcell.LibraryAppDb.entity.enums.FineType;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -25,12 +25,11 @@ public class Fine {
 	@Temporal(TemporalType.DATE)
 	private Date date;
 
+	private FineType fineType;
+
 	@ManyToOne
 	@JoinColumn(name = "borrow_id")
 	private Borrow borrow;
-
-	@OneToMany(mappedBy = "fine")
-	private List<Payment> payments;
 
 	public int getId() {
 		return id;
@@ -56,12 +55,12 @@ public class Fine {
 		this.borrow = borrow;
 	}
 
-	public List<Payment> getPayments() {
-		return payments;
+	public FineType getFineType() {
+		return fineType;
 	}
 
-	public void setPayments(List<Payment> payments) {
-		this.payments = payments;
+	public void setFineType(FineType fineType) {
+		this.fineType = fineType;
 	}
 
 }

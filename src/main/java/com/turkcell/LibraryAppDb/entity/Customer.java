@@ -3,6 +3,8 @@ package com.turkcell.LibraryAppDb.entity;
 import java.util.Date;
 import java.util.List;
 
+import com.turkcell.LibraryAppDb.entity.enums.MemberStatus;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +24,7 @@ public class Customer {
 	private String name;
 	private String phone;
 	private String email;
+	private MemberStatus memberStatus;
 
 	@Temporal(TemporalType.DATE)
 	private Date registerDate;
@@ -31,6 +34,9 @@ public class Customer {
 
 	@OneToMany(mappedBy = "customer")
 	private List<Borrow> borrows;
+
+	@OneToMany(mappedBy = "customer")
+	private List<Reservation> reservations;
 
 	public int getId() {
 		return id;
@@ -86,6 +92,22 @@ public class Customer {
 
 	public void setBorrows(List<Borrow> borrows) {
 		this.borrows = borrows;
+	}
+
+	public MemberStatus getMemberStatus() {
+		return memberStatus;
+	}
+
+	public void setMemberStatus(MemberStatus memberStatus) {
+		this.memberStatus = memberStatus;
+	}
+
+	public List<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
 	}
 
 }

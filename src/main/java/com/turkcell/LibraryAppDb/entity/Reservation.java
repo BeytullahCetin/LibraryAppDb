@@ -1,9 +1,8 @@
 package com.turkcell.LibraryAppDb.entity;
 
 import java.util.Date;
-import java.util.List;
 
-import com.turkcell.LibraryAppDb.entity.enums.BookStatus;
+import com.turkcell.LibraryAppDb.entity.enums.ReservationStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,29 +10,29 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "book_copies")
-public class BookCopy {
-
+@Table(name = "reservations")
+public class Reservation {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
-	@Temporal(TemporalType.DATE)
-	private Date acquisionDate;
-	private BookStatus bookStatus;
+
+	@ManyToOne
+	@JoinColumn(name = "customer_id")
+	private Customer customer;
 
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
 
-	@OneToMany(mappedBy = "bookCopy")
-	private List<Borrow> borrows;
+	@Temporal(TemporalType.DATE)
+	private Date acquisionDate;
+
+	private ReservationStatus reservationStatus;
 
 	public int getId() {
 		return id;
@@ -41,6 +40,14 @@ public class BookCopy {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public Book getBook() {
@@ -59,20 +66,12 @@ public class BookCopy {
 		this.acquisionDate = acquisionDate;
 	}
 
-	public List<Borrow> getBorrows() {
-		return borrows;
+	public ReservationStatus getReservationStatus() {
+		return reservationStatus;
 	}
 
-	public void setBorrows(List<Borrow> borrows) {
-		this.borrows = borrows;
-	}
-
-	public BookStatus getBookStatus() {
-		return bookStatus;
-	}
-
-	public void setBookStatus(BookStatus bookStatus) {
-		this.bookStatus = bookStatus;
+	public void setReservationStatus(ReservationStatus reservationStatus) {
+		this.reservationStatus = reservationStatus;
 	}
 
 }

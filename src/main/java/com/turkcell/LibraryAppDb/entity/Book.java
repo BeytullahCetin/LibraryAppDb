@@ -54,6 +54,10 @@ public class Book {
 
 	@OneToMany(mappedBy = "book")
 	@JsonIgnore
+	private List<Reservation> reservations;
+
+	@OneToMany(mappedBy = "book")
+	@JsonIgnore
 	private List<Review> reviews;
 
 	public int getId() {
@@ -144,4 +148,11 @@ public class Book {
 		this.reviews = reviews;
 	}
 
+	public List<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
+	}
 }
