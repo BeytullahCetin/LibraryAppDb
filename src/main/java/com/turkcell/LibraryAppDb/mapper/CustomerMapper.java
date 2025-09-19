@@ -2,6 +2,7 @@ package com.turkcell.LibraryAppDb.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
 
 import com.turkcell.LibraryAppDb.dto.customer.request.CreateCustomerRequest;
 import com.turkcell.LibraryAppDb.dto.customer.request.UpdateCustomerRequest;
