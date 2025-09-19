@@ -10,6 +10,16 @@ public class UpdatedFineResponse {
 	private Date date;
 	private FineType fineType;
 
+	public UpdatedFineResponse() {
+	}
+
+	public UpdatedFineResponse(int id, float amount, Date date, FineType fineType) {
+		this.id = id;
+		this.amount = amount;
+		this.date = date;
+		this.fineType = fineType;
+	}
+
 	public int getId() {
 		return id;
 	}
