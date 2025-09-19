@@ -31,6 +31,7 @@ public class Reservation {
 
 	@Temporal(TemporalType.DATE)
 	private Date expireAt;
+	private ReservationStatus reservationStatus;
 
 	public Date getExpireAt() {
 		return expireAt;
@@ -39,8 +40,6 @@ public class Reservation {
 	public void setExpireAt(Date expireAt) {
 		this.expireAt = expireAt;
 	}
-
-	private ReservationStatus reservationStatus;
 
 	public int getId() {
 		return id;
