@@ -22,6 +22,8 @@ public class Fine {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	private float amount;
+
 	@Temporal(TemporalType.DATE)
 	private Date date;
 
@@ -61,6 +63,14 @@ public class Fine {
 
 	public void setFineType(FineType fineType) {
 		this.fineType = fineType;
+	}
+
+	public float getAmount() {
+		return amount;
+	}
+
+	public void setAmount(float amount) {
+		this.amount = amount;
 	}
 
 }

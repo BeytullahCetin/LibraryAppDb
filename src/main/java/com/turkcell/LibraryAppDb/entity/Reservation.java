@@ -30,7 +30,15 @@ public class Reservation {
 	private Book book;
 
 	@Temporal(TemporalType.DATE)
-	private Date acquisionDate;
+	private Date expireAt;
+
+	public Date getExpireAt() {
+		return expireAt;
+	}
+
+	public void setExpireAt(Date expireAt) {
+		this.expireAt = expireAt;
+	}
 
 	private ReservationStatus reservationStatus;
 
@@ -56,14 +64,6 @@ public class Reservation {
 
 	public void setBook(Book book) {
 		this.book = book;
-	}
-
-	public Date getAcquisionDate() {
-		return acquisionDate;
-	}
-
-	public void setAcquisionDate(Date acquisionDate) {
-		this.acquisionDate = acquisionDate;
 	}
 
 	public ReservationStatus getReservationStatus() {
