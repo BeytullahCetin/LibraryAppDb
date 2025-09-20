@@ -4,24 +4,23 @@ import java.util.Date;
 
 import com.turkcell.LibraryAppDb.entity.enums.FineType;
 
-public class GetFineByCustomerIdResponse {
+public class PaidFineResponse {
 	private int id;
-	private FineType fineType;
 	private float amount;
 	private Date issuDate;
-	private Date paymenDate;
+	private Date paymentDate;
+	private FineType fineType;
 	private boolean isPaid;
 
-	public GetFineByCustomerIdResponse() {
+	public PaidFineResponse() {
 	}
 
-	public GetFineByCustomerIdResponse(int id, FineType fineType, float amount, Date issuDate,
-			Date paymenDate, boolean isPaid) {
+	public PaidFineResponse(int id, float amount, Date issuDate, Date paymentDate, FineType fineType, boolean isPaid) {
 		this.id = id;
-		this.fineType = fineType;
 		this.amount = amount;
 		this.issuDate = issuDate;
-		this.paymenDate = paymenDate;
+		this.paymentDate = paymentDate;
+		this.fineType = fineType;
 		this.isPaid = isPaid;
 	}
 
@@ -57,12 +56,12 @@ public class GetFineByCustomerIdResponse {
 		this.issuDate = issuDate;
 	}
 
-	public Date getPaymenDate() {
-		return paymenDate;
+	public Date getPaymentDate() {
+		return paymentDate;
 	}
 
-	public void setPaymenDate(Date paymenDate) {
-		this.paymenDate = paymenDate;
+	public void setPaymentDate(Date paymentDate) {
+		this.paymentDate = paymentDate;
 	}
 
 	public boolean isPaid() {
@@ -72,4 +71,5 @@ public class GetFineByCustomerIdResponse {
 	public void setPaid(boolean isPaid) {
 		this.isPaid = isPaid;
 	}
+
 }

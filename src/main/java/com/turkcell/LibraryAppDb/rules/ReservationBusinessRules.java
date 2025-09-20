@@ -1,9 +1,12 @@
 package com.turkcell.LibraryAppDb.rules;
 
+import org.springframework.stereotype.Component;
+
 import com.turkcell.LibraryAppDb.entity.Reservation;
 import com.turkcell.LibraryAppDb.entity.enums.ReservationStatus;
 import com.turkcell.LibraryAppDb.repository.ReservationRepostiory;
 
+@Component
 public class ReservationBusinessRules {
 
 	private final ReservationRepostiory reservationRepostiory;

@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import com.turkcell.LibraryAppDb.dto.fine.response.GetFineByCustomerIdResponse;
-import com.turkcell.LibraryAppDb.dto.fine.response.UpdatedFineResponse;
+import com.turkcell.LibraryAppDb.dto.fine.response.PaidFineResponse;
 import com.turkcell.LibraryAppDb.entity.Fine;
 
 @Mapper(componentModel = "spring")
@@ -13,5 +13,5 @@ public interface FineMapper {
 
 	GetFineByCustomerIdResponse fineToGetFineByCustomerId(Fine fine);
 
-	UpdatedFineResponse fineToUpdatedFineResponse(Fine fine);
+	PaidFineResponse fineToPaidFineResponse(Fine fine);
 }

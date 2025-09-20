@@ -25,7 +25,10 @@ public class Fine {
 	private float amount;
 
 	@Temporal(TemporalType.DATE)
-	private Date date;
+	private Date issueDate;
+
+	@Temporal(TemporalType.DATE)
+	private Date paymentDate;
 
 	private FineType fineType;
 	private boolean isPaid;
@@ -40,14 +43,6 @@ public class Fine {
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
 	}
 
 	public Borrow getBorrow() {
@@ -79,6 +74,30 @@ public class Fine {
 	}
 
 	public void setIsPaid(boolean isPaid) {
+		this.isPaid = isPaid;
+	}
+
+	public Date getIssueDate() {
+		return issueDate;
+	}
+
+	public void setIssueDate(Date issueDate) {
+		this.issueDate = issueDate;
+	}
+
+	public Date getPaymentDate() {
+		return paymentDate;
+	}
+
+	public void setPaymentDate(Date paymentDate) {
+		this.paymentDate = paymentDate;
+	}
+
+	public boolean isPaid() {
+		return isPaid;
+	}
+
+	public void setPaid(boolean isPaid) {
 		this.isPaid = isPaid;
 	}
 

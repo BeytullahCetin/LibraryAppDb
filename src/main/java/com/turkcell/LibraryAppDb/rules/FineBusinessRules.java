@@ -5,14 +5,22 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
+import org.springframework.stereotype.Component;
+
+import com.turkcell.LibraryAppDb.entity.Fine;
 import com.turkcell.LibraryAppDb.entity.enums.FineType;
 import com.turkcell.LibraryAppDb.repository.FineRepository;
 
+@Component
 public class FineBusinessRules {
 	private final FineRepository fineRepository;
 
 	public FineBusinessRules(FineRepository fineRepository) {
 		this.fineRepository = fineRepository;
+	}
+
+	public Fine fineShouldExistWithGivenId(int fineId) {
+		return fineRepository.findById(fineId).orElseThrow(() -> new IllegalArgumentException("Fine not found"));
 	}
 
 	public float calculateFineAmount(Date dueDate, Date returnDate, FineType fineType) {
@@ -48,7 +56,7 @@ public class FineBusinessRules {
 		}
 	}
 
-	public void checkIfCustomerHasUnpaidFines(int customerId) {
+	public void customerCannotBorrowOrReservationWhenHasUnpaidFine(int customerId) {
 		if (fineRepository.existsByBorrow_Customer_IdAndIsPaid(customerId, false)) {
 			throw new IllegalStateException(
 					"Customer has unpaid fines. Please settle them before making a reservation.");

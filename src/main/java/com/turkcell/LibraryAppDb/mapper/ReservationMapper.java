@@ -16,6 +16,8 @@ public interface ReservationMapper {
 	@Mapping(source = "customerId", target = "customer.id")
 	@Mapping(source = "bookId", target = "book.id")
 	@Mapping(target = "id", ignore = true)
+	@Mapping(target = "expireAt", ignore = true)
+	@Mapping(target = "reservationStatus", ignore = true)
 	Reservation createReservationRequestToReservation(CreateReservationRequest createReservationRequest);
 
 	@Mapping(source = "customer.id", target = "customerId")
