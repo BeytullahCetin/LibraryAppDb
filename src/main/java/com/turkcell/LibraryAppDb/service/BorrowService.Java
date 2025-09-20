@@ -1,23 +1,24 @@
 package com.turkcell.LibraryAppDb.service;
 
-import com.turkcell.LibraryAppDb.dto.borrow.response.DeletedBorrowResponse;
-import com.turkcell.LibraryAppDb.entity.Customer;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.turkcell.LibraryAppDb.dto.borrow.request.CreateBorrowRequest;
 import com.turkcell.LibraryAppDb.dto.borrow.request.UpdateBorrowRequest;
 import com.turkcell.LibraryAppDb.dto.borrow.response.CreatedBorrowResponse;
+import com.turkcell.LibraryAppDb.dto.borrow.response.DeletedBorrowResponse;
+import com.turkcell.LibraryAppDb.dto.borrow.response.GetByCustomerIdBorrowResponse;
 import com.turkcell.LibraryAppDb.dto.borrow.response.GetByIdBorrowResponse;
 import com.turkcell.LibraryAppDb.dto.borrow.response.UpdatedBorrowResponse;
 import com.turkcell.LibraryAppDb.entity.Borrow;
+import com.turkcell.LibraryAppDb.entity.Customer;
+import com.turkcell.LibraryAppDb.mapper.BorrowMapper;
 import com.turkcell.LibraryAppDb.repository.BorrowRepository;
 import com.turkcell.LibraryAppDb.rules.BorrowBusinessRules;
-import com.turkcell.LibraryAppDb.mapper.BorrowMapper;
 
 import jakarta.validation.Valid;
-
-import java.util.List;
 
 @Service
 @Validated
@@ -26,7 +27,9 @@ public class BorrowService {
     private final BorrowBusinessRules borrowBusinessRules;
     private final BorrowMapper borrowMapper;
     private final CustomerService customerService;
-    public BorrowService(BorrowRepository borrowRepository, BorrowBusinessRules borrowBusinessRules, BorrowMapper borrowMapper, CustomerService customerService) {
+
+    public BorrowService(BorrowRepository borrowRepository, BorrowBusinessRules borrowBusinessRules,
+            BorrowMapper borrowMapper, CustomerService customerService) {
         this.borrowRepository = borrowRepository;
         this.borrowBusinessRules = borrowBusinessRules;
         this.borrowMapper = borrowMapper;
@@ -41,6 +44,7 @@ public class BorrowService {
         borrowRepository.save(borrow);
         return borrowMapper.borrowToCreatedBorrowResponse(borrow);
     }
+
     // PATCH /api/borrows/{id}
     public UpdatedBorrowResponse update(int id, @Valid UpdateBorrowRequest borrowDto) {
         borrowBusinessRules.ensureBorrowExists(id);
@@ -56,16 +60,23 @@ public class BorrowService {
         borrowRepository.delete(borrow);
         return borrowMapper.borrowToDeletedBorrowResponse(borrow);
     }
+
     // GET /api/borrows/{id}
     public GetByIdBorrowResponse getById(int id) {
         borrowBusinessRules.ensureBorrowExists(id);
         Borrow borrow = borrowRepository.findById(id).get();
         return borrowMapper.borrowToGetByIdBorrowResponse(borrow);
     }
+
     // GET /api/borrows
     public List<GetByIdBorrowResponse> getAll() {
         List<Borrow> borrows = borrowRepository.findAll();
         return borrowMapper.borrowToGetByIdBorrowResponse(borrows);
     }
-    //GET /api/loans/members/{memberId}?status=OPEN
+
+    // GET /api/loans/members/{memberId}?status=OPEN
+    public List<GetByCustomerIdBorrowResponse> getByCustomerIdAll(int customerId) {
+        List<Borrow> borrows = borrowRepository.findByCustomer_Id(customerId);
+        return borrowMapper.borrowToGetByCustomerIdBorrowResponse(borrows);
+    }
 }

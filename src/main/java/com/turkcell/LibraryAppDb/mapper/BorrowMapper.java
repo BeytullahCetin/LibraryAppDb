@@ -4,6 +4,7 @@ import com.turkcell.LibraryAppDb.dto.borrow.request.CreateBorrowRequest;
 import com.turkcell.LibraryAppDb.dto.borrow.request.UpdateBorrowRequest;
 import com.turkcell.LibraryAppDb.dto.borrow.response.CreatedBorrowResponse;
 import com.turkcell.LibraryAppDb.dto.borrow.response.DeletedBorrowResponse;
+import com.turkcell.LibraryAppDb.dto.borrow.response.GetByCustomerIdBorrowResponse;
 import com.turkcell.LibraryAppDb.dto.borrow.response.GetByIdBorrowResponse;
 import com.turkcell.LibraryAppDb.dto.borrow.response.UpdatedBorrowResponse;
 import com.turkcell.LibraryAppDb.entity.Borrow;
@@ -29,4 +30,7 @@ public interface BorrowMapper {
     GetByIdBorrowResponse borrowToGetByIdBorrowResponse(Borrow borrow);
 
     List<GetByIdBorrowResponse> borrowToGetByIdBorrowResponse(List<Borrow> borrows);
+
+    List<GetByCustomerIdBorrowResponse> borrowToGetByCustomerIdBorrowResponse(List<Borrow> borrows);
+
 }
