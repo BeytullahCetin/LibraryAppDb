@@ -12,9 +12,11 @@ import com.turkcell.LibraryAppDb.dto.book.response.CreatedBookResponse;
 import com.turkcell.LibraryAppDb.dto.book.response.DeletedBookResponse;
 import com.turkcell.LibraryAppDb.dto.book.response.GetByIdBookResponse;
 import com.turkcell.LibraryAppDb.dto.book.response.UpdatedBookResponse;
+import com.turkcell.LibraryAppDb.dto.book.response.UpdatedBookResponseWithCopyCount;
 import com.turkcell.LibraryAppDb.entity.Book;
 import com.turkcell.LibraryAppDb.entity.Language;
 import com.turkcell.LibraryAppDb.entity.Publisher;
+import com.turkcell.LibraryAppDb.mapper.BookMapper;
 import com.turkcell.LibraryAppDb.repository.BookRepository;
 import com.turkcell.LibraryAppDb.rules.BookBusinessRules;
 
@@ -96,10 +98,10 @@ public class BookService {
 	}
 
 	// PATCH /api/books/{id}/copies?delta=...
-	public void updateCopies(int id, int delta) {
+	public UpdatedBookResponseWithCopyCount updateCopies(int id, int delta) {
 		Book book = bookBusinessRules.bookShouldExistWithGivenId(id);
-		if (delta == 0)
-			return;
+
+		bookBusinessRules.bookCopyDeltaMustNotBeZero(delta);
 
 		if (delta > 0) {
 			bookCopyService.createCopies(book, delta);
@@ -108,6 +110,11 @@ public class BookService {
 			bookBusinessRules.ensureCanRemoveCopies(id, removeCount);
 			bookCopyService.removeAvailableCopies(id, removeCount);
 		}
+
+		BookMapper bookMapper = BookMapper.INSTANCE;
+		UpdatedBookResponseWithCopyCount response = bookMapper.bookToUpdatedBookResponseWithCopyCount(book);
+		response.setCopyCount(book.getBookCopies().size());
+		return response;
 	}
 
 	// GET /api/books?isbn=&title=&author=&available=true
@@ -132,7 +139,7 @@ public class BookService {
 					.collect(Collectors.toList());
 		}
 		if (available != null) {
-			final boolean wantAvailable = available.booleanValue();
+			final boolean wantAvailable = available;
 			books = books.stream().filter(b -> {
 				long avail = bookCopyService.countAvailableByBookId(b.getId());
 				return wantAvailable ? (avail > 0) : (avail == 0);

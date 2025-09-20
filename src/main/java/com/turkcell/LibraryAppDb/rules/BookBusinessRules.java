@@ -21,6 +21,12 @@ public class BookBusinessRules {
 				.orElseThrow(() -> new IllegalArgumentException("Book bulunamadı."));
 	}
 
+	public void bookCopyDeltaMustNotBeZero(int delta) {
+		if (delta == 0) {
+			throw new IllegalArgumentException("Delta sıfır olamaz.");
+		}
+	}
+
 	public void ensureIsbnUnique(String isbn) {
 		if (isbn == null || isbn.isBlank()) {
 			throw new IllegalArgumentException("ISBN zorunludur.");
