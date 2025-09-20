@@ -54,7 +54,7 @@ public class CustomerService {
 	}
 
 	public Customer getCustomerById(int id) {
-		return customerRepository.findById(id).get();
+		return customerBusinessRules.customerShouldExistWithGivenId(id);
 	}
 
 	public UpdatedCustomerResponse update(int id, @Valid UpdateCustomerRequest customerDto) {
