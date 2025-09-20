@@ -15,6 +15,8 @@ public class LibraryAppDbApplication {
 	 * Book, Borrow, Customer(Hakkı)
 	 * Reservation, Fine(Beytullah)
 	 * - SERVICE - Controller
+	 * Customer, Book, Borrow (Hakkı)
+	 * Reservation, Fine(Beytullah)
 	 */
 
 	// 2 entity için dto-service-controller
