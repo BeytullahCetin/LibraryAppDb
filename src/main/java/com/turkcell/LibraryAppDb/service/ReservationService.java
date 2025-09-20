@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import com.turkcell.LibraryAppDb.dto.reservation.request.CreateReservationRequest;
 import com.turkcell.LibraryAppDb.dto.reservation.response.CancelledReservationResponse;
@@ -17,7 +18,10 @@ import com.turkcell.LibraryAppDb.mapper.ReservationMapper;
 import com.turkcell.LibraryAppDb.repository.ReservationRepostiory;
 import com.turkcell.LibraryAppDb.rules.ReservationBusinessRules;
 
+import jakarta.validation.Valid;
+
 @Service
+@Validated
 public class ReservationService {
 
 	private final ReservationRepostiory reservationRepostiory;
@@ -42,7 +46,7 @@ public class ReservationService {
 		}
 	}
 
-	public CreatedReservationResponse reserve(CreateReservationRequest request) {
+	public CreatedReservationResponse reserve(@Valid CreateReservationRequest request) {
 
 		ReservationMapper reservationMapper = ReservationMapper.INSTANCE;
 		// TODO: Get customer by id
