@@ -4,12 +4,7 @@ import com.turkcell.LibraryAppDb.dto.bookCopy.request.CreateBookCopyRequest;
 import com.turkcell.LibraryAppDb.dto.bookCopy.request.UpdateBookCopyRequest;
 import com.turkcell.LibraryAppDb.dto.bookCopy.response.CreatedBookCopyResponse;
 import com.turkcell.LibraryAppDb.dto.bookCopy.response.UpdatedBookCopyResponse;
-import com.turkcell.LibraryAppDb.dto.borrow.request.CreateBorrowRequest;
-import com.turkcell.LibraryAppDb.dto.borrow.request.UpdateBorrowRequest;
-import com.turkcell.LibraryAppDb.dto.borrow.response.CreatedBorrowResponse;
-import com.turkcell.LibraryAppDb.dto.borrow.response.UpdatedBorrowResponse;
 import com.turkcell.LibraryAppDb.entity.BookCopy;
-import com.turkcell.LibraryAppDb.entity.Borrow;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
