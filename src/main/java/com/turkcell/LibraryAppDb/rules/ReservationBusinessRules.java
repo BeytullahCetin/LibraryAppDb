@@ -1,6 +1,5 @@
 package com.turkcell.LibraryAppDb.rules;
 
-import com.turkcell.LibraryAppDb.entity.Customer;
 import com.turkcell.LibraryAppDb.entity.enums.ReservationStatus;
 import com.turkcell.LibraryAppDb.repository.ReservationRepostiory;
 
@@ -24,9 +23,8 @@ public class ReservationBusinessRules {
 		}
 	}
 
-	public void customerCannotReserveMultipleBooks(Customer customer) {
-		boolean hasReserved = reservationRepostiory.hasCustomerReservedBook(customer);
-		if (hasReserved) {
+	public void customerCannotHaveMultipleReservations(int customerId) {
+		if (reservationRepostiory.existsByCustomer_IdAndReservationStatus(customerId, ReservationStatus.ACTIVE)) {
 			throw new IllegalArgumentException("Customer has already reserved this book.");
 		}
 	}

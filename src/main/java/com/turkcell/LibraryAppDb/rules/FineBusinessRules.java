@@ -5,7 +5,6 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-import com.turkcell.LibraryAppDb.entity.Customer;
 import com.turkcell.LibraryAppDb.entity.enums.FineType;
 import com.turkcell.LibraryAppDb.repository.FineRepository;
 
@@ -49,8 +48,8 @@ public class FineBusinessRules {
 		}
 	}
 
-	public void checkIfCustomerHasUnpaidFines(Customer customer) {
-		if (fineRepository.isCustomerHasPreviouslyUnpaidFines(customer)) {
+	public void checkIfCustomerHasUnpaidFines(int customerId) {
+		if (fineRepository.existsByBorrow_Customer_IdAndIsPaid(customerId, false)) {
 			throw new IllegalStateException(
 					"Customer has unpaid fines. Please settle them before making a reservation.");
 		}

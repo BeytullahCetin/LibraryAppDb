@@ -28,6 +28,7 @@ public class Fine {
 	private Date date;
 
 	private FineType fineType;
+	private boolean isPaid;
 
 	@ManyToOne
 	@JoinColumn(name = "borrow_id")
@@ -71,6 +72,14 @@ public class Fine {
 
 	public void setAmount(float amount) {
 		this.amount = amount;
+	}
+
+	public boolean isIsPaid() {
+		return isPaid;
+	}
+
+	public void setIsPaid(boolean isPaid) {
+		this.isPaid = isPaid;
 	}
 
 }

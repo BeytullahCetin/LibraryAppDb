@@ -7,4 +7,5 @@ import com.turkcell.LibraryAppDb.entity.Borrow;
 public interface BorrowRepository extends JpaRepository<Borrow, Integer> {
     long countByCustomer_IdAndReturnDateIsNull(int customerId);
 
+    boolean existsByCustomer_IdAndBookCopy_Book_Id(int customerId, int bookId);
 }
