@@ -51,6 +51,14 @@ public class BorrowBusinessRules {
 		}
 	}
 
+	public void ensureBorrowExists(int id) {
+		if (!borrowRepository.existsById(id)) {
+			throw new IllegalArgumentException("Ödünç alma bulunamadı.");
+		}
+	}
+
+	
+
 	// TODO: Servise eklenecek
 	// public void handleReturn(Borrow borrow) {
 	// if (borrow.getReturnDate() == null) {

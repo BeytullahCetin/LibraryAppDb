@@ -14,6 +14,12 @@ public class CustomerBusinessRules {
 		this.customerRepository = customerRepository;
 	}
 
+	public void ensureCustomerExists(int id) {
+		if (!customerRepository.existsById(id)) {
+			throw new IllegalArgumentException("Müşteri bulunamadı.");
+		}
+	}
+
 	public void ensureEmailUnique(String email) {
 		if (email == null || email.isBlank()) {
 			throw new IllegalArgumentException("Email zorunludur.");

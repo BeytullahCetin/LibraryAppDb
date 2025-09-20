@@ -9,6 +9,7 @@ public class UpdatedFineResponse {
 	private float amount;
 	private Date date;
 	private FineType fineType;
+	private boolean isPaid;
 
 	public UpdatedFineResponse() {
 	}
@@ -50,6 +51,14 @@ public class UpdatedFineResponse {
 
 	public void setFineType(FineType fineType) {
 		this.fineType = fineType;
+	}
+
+	public boolean isIsPaid() {
+		return isPaid;
+	}
+
+	public void setIsPaid(boolean isPaid) {
+		this.isPaid = isPaid;
 	}
 
 }

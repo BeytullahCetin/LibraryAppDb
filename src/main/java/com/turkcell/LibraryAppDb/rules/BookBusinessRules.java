@@ -1,5 +1,6 @@
 package com.turkcell.LibraryAppDb.rules;
 
+import com.turkcell.LibraryAppDb.entity.Book;
 import org.springframework.stereotype.Component;
 
 import com.turkcell.LibraryAppDb.repository.BookRepository;
@@ -15,12 +16,25 @@ public class BookBusinessRules {
 		this.bookRepository = bookRepository;
 	}
 
+	public void ensureBookExists(int id) {
+		if (!bookRepository.existsById(id)) {
+			throw new IllegalArgumentException("Book bulunamadı.");
+		}
+	}
+
 	public void ensureIsbnUnique(String isbn) {
 		if (isbn == null || isbn.isBlank()) {
 			throw new IllegalArgumentException("ISBN zorunludur.");
 		}
 		if (bookRepository.existsByIsbnIgnoreCase(isbn)) {
 			throw new IllegalArgumentException("ISBN benzersiz olmalı.");
+		}
+	}
+
+	public void ensureCanRemoveCopies(int bookId, int removeCount) {
+		Book book = bookRepository.findById(bookId).get();
+		if (book.getBookCopies().size() < removeCount) {
+			throw new IllegalArgumentException("Kitabın bu kadar kopyası yok.");
 		}
 	}
 

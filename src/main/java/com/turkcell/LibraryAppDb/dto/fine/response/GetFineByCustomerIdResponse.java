@@ -9,6 +9,8 @@ public class GetFineByCustomerIdResponse {
 	private float amount;
 	private Date date;
 	private FineType fineType;
+	private boolean isPaid;
+
 
 	public GetFineByCustomerIdResponse() {
 	}
@@ -50,6 +52,14 @@ public class GetFineByCustomerIdResponse {
 
 	public void setFineType(FineType fineType) {
 		this.fineType = fineType;
+	}
+
+	public boolean isIsPaid() {
+		return isPaid;
+	}
+
+	public void setIsPaid(boolean isPaid) {
+		this.isPaid = isPaid;
 	}
 
 }

@@ -17,4 +17,10 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 	List<Book> findByLanguageName(@Param("languageName") String languageName);
 
 	boolean existsByIsbnIgnoreCase(String isbn);
+
+	List<Book> findByIsbnContainingIgnoreCase(String isbn);
+
+	List<Book> findByTitleContainingIgnoreCase(String title);
+
+	List<Book> findDistinctByAuthors_NameContainingIgnoreCase(String author);
 }
