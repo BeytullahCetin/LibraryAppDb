@@ -1,6 +1,5 @@
 package com.turkcell.LibraryAppDb.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,10 +19,13 @@ import com.turkcell.LibraryAppDb.rules.FineBusinessRules;
 public class FineService {
 	private final FineRepository fineRepository;
 	private final FineBusinessRules fineBusinessRules;
+	private final CustomerService customerService;
 
-	public FineService(FineRepository fineRepository, FineBusinessRules fineBusinessRules) {
+	public FineService(FineRepository fineRepository, FineBusinessRules fineBusinessRules,
+			CustomerService customerService) {
 		this.fineRepository = fineRepository;
 		this.fineBusinessRules = fineBusinessRules;
+		this.customerService = customerService;
 	}
 
 	public Fine createFine(Borrow borrow, FineType fineType) {
@@ -49,20 +51,12 @@ public class FineService {
 	}
 
 	public List<GetFineByCustomerIdResponse> getFinesByCustomerId(int customerId) {
-		// TODO Check customer exists
-		// Customer customer = customerBusinessRules.checkIfCustomerExists(customerId);
-		Customer customer = new Customer();
+		Customer customer = customerService.getCustomerById(customerId);
 
 		FineMapper fineMapper = FineMapper.INSTANCE;
 
-		List<Fine> finesList = fineRepository.findByBorrow_Customer_Id(customerId);
-		List<GetFineByCustomerIdResponse> fines = new ArrayList<>();
-
-		for (Fine fine : finesList) {
-			fines.add(fineMapper.fineToGetFineByCustomerId(fine));
-		}
-
-		return fines;
+		List<Fine> fines = fineRepository.findByBorrow_Customer_Id(customer.getId());
+		return fineMapper.finesToGetFineByCustomerIds(fines);
 
 	}
 }

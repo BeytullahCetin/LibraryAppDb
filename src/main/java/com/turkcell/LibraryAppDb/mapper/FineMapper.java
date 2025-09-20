@@ -1,5 +1,7 @@
 package com.turkcell.LibraryAppDb.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -14,4 +16,6 @@ public interface FineMapper {
 	GetFineByCustomerIdResponse fineToGetFineByCustomerId(Fine fine);
 
 	PaidFineResponse fineToPaidFineResponse(Fine fine);
+
+	List<GetFineByCustomerIdResponse> finesToGetFineByCustomerIds(List<Fine> fines);
 }
