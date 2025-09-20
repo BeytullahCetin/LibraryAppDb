@@ -1,5 +1,6 @@
 package com.turkcell.LibraryAppDb.rules;
 
+import com.turkcell.LibraryAppDb.entity.Reservation;
 import com.turkcell.LibraryAppDb.entity.enums.ReservationStatus;
 import com.turkcell.LibraryAppDb.repository.ReservationRepostiory;
 
@@ -9,6 +10,18 @@ public class ReservationBusinessRules {
 
 	public ReservationBusinessRules(ReservationRepostiory reservationRepostiory) {
 		this.reservationRepostiory = reservationRepostiory;
+	}
+
+	public Reservation reservationShouldExistWithGivenId(int id) {
+		return reservationRepostiory.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Reservation not found with id: " + id));
+	}
+
+	public void onlyActiveReservationsCanBeCancelled(Reservation reservation) {
+		if (reservation.getReservationStatus() != ReservationStatus.ACTIVE) {
+			throw new IllegalStateException("Only active reservations can be cancelled.");
+
+		}
 	}
 
 	public void reservationStatusShouldBeValid(String status) {
@@ -23,8 +36,9 @@ public class ReservationBusinessRules {
 		}
 	}
 
-	public void customerCannotHaveMultipleReservations(int customerId) {
-		if (reservationRepostiory.existsByCustomer_IdAndReservationStatus(customerId, ReservationStatus.ACTIVE)) {
+	public void customerCannotHaveMultipleReservationsForSameBook(int customerId, int bookId) {
+		if (reservationRepostiory.existsByCustomer_IdAndBook_IdAndReservationStatus(customerId, bookId,
+				ReservationStatus.ACTIVE)) {
 			throw new IllegalArgumentException("Customer has already reserved this book.");
 		}
 	}

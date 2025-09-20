@@ -6,5 +6,5 @@ import com.turkcell.LibraryAppDb.entity.Reservation;
 import com.turkcell.LibraryAppDb.entity.enums.ReservationStatus;
 
 public interface ReservationRepostiory extends JpaRepository<Reservation, Integer> {
-	boolean existsByCustomer_IdAndReservationStatus(int customerId, ReservationStatus status);
+	boolean existsByCustomer_IdAndBook_IdAndReservationStatus(int customerId, int bookId, ReservationStatus status);
 }
