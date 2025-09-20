@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -16,6 +17,7 @@ import com.turkcell.LibraryAppDb.entity.Reservation;
 import com.turkcell.LibraryAppDb.entity.enums.ReservationStatus;
 import com.turkcell.LibraryAppDb.mapper.ReservationMapper;
 import com.turkcell.LibraryAppDb.repository.ReservationRepostiory;
+import com.turkcell.LibraryAppDb.rules.BookBusinessRules;
 import com.turkcell.LibraryAppDb.rules.ReservationBusinessRules;
 
 import jakarta.validation.Valid;
@@ -26,15 +28,26 @@ public class ReservationService {
 
 	private final ReservationRepostiory reservationRepostiory;
 	private final ReservationBusinessRules reservationBusinessRules;
+	private final CustomerService customerService;
+	private final BookBusinessRules bookBusinessRules;
+	private final BookCopyService bookCopyService;
 
 	public ReservationService(ReservationRepostiory reservationRepostiory,
-			ReservationBusinessRules reservationBusinessRules) {
+			ReservationBusinessRules reservationBusinessRules,
+			CustomerService customerService,
+			BookBusinessRules bookBusinessRules,
+			BookCopyService bookCopyService) {
 		this.reservationRepostiory = reservationRepostiory;
 		this.reservationBusinessRules = reservationBusinessRules;
+		this.customerService = customerService;
+		this.bookBusinessRules = bookBusinessRules;
+		this.bookCopyService = bookCopyService;
+
 	}
 
-	// TODO: This method should be called by a scheduled task (e.g., daily)
+	@Scheduled(fixedRate = 6000)
 	public void cancelExpiredReservations() {
+		// log.info("The time is now {}", dateFormat.format(new Date()));
 		List<Reservation> reservations = reservationRepostiory.findAll();
 		Date now = new Date();
 		for (Reservation reservation : reservations) {
@@ -49,24 +62,22 @@ public class ReservationService {
 	public CreatedReservationResponse reserve(@Valid CreateReservationRequest request) {
 
 		ReservationMapper reservationMapper = ReservationMapper.INSTANCE;
-		// TODO: Get customer by id
-		// Customer customer = customerService.getById(request.getCustomerId());
-		Customer customer = new Customer();
+
+		Customer customer = customerService.getCustomerById(request.getCustomerId());
 		customer.setId(request.getCustomerId());
 
-		Book book = new Book();
-		book.setId(request.getBookId());
+		Book book = bookBusinessRules.bookShouldExistWithGivenId(request.getBookId());
 
-		// TODO: (availableCopies > 0 -> return)
-		// Check if the book copy is not available copies by book id
+		long availableCopies = bookCopyService.countAvailableByBookId(book.getId());
+		if (availableCopies > 0) {
+			throw new IllegalArgumentException("Kitap şu anda müsait. Lütfen ödünç alma işlemi yapın.");
+		}
+
 		reservationBusinessRules.customerCannotHaveMultipleReservationsForSameBook(customer.getId(), book.getId());
 
-		Reservation reservation = new Reservation();
-		reservation.setCustomer(customer);
-		reservation.setBook(book);
+		Reservation reservation = reservationMapper.createReservationRequestToReservation(request);
 		reservation.setReservationStatus(ReservationStatus.ACTIVE);
 
-		// TODO: Set reservation expire date to next day
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date()); // bugünün tarihini al
 		calendar.add(Calendar.DATE, 1); // 1 gün ekle

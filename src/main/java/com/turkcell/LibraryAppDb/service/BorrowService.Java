@@ -42,6 +42,9 @@ public class BorrowService {
         borrowBusinessRules.ensureSameBookNotAlreadyBorrowed(borrowDto.getCustomerId(), borrowDto.getBookCopyId());
         Borrow borrow = borrowMapper.createBorrowRequestToBorrow(borrowDto);
         borrowRepository.save(borrow);
+
+        
+
         return borrowMapper.borrowToCreatedBorrowResponse(borrow);
     }
 
