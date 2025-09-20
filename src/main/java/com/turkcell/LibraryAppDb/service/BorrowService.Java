@@ -17,6 +17,7 @@ import com.turkcell.LibraryAppDb.entity.Customer;
 import com.turkcell.LibraryAppDb.mapper.BorrowMapper;
 import com.turkcell.LibraryAppDb.repository.BorrowRepository;
 import com.turkcell.LibraryAppDb.rules.BorrowBusinessRules;
+import com.turkcell.LibraryAppDb.rules.FineBusinessRules;
 
 import jakarta.validation.Valid;
 
@@ -27,14 +28,17 @@ public class BorrowService {
     private final BorrowBusinessRules borrowBusinessRules;
     private final BorrowMapper borrowMapper;
     private final CustomerService customerService;
+    private final FineBusinessRules fineBusinessRules;
     private final FineService fineService;
 
     public BorrowService(BorrowRepository borrowRepository, BorrowBusinessRules borrowBusinessRules,
-            BorrowMapper borrowMapper, CustomerService customerService, FineService fineService) {
+            BorrowMapper borrowMapper, CustomerService customerService, FineBusinessRules fineBusinessRules,
+            FineService fineService) {
         this.borrowRepository = borrowRepository;
         this.borrowBusinessRules = borrowBusinessRules;
         this.borrowMapper = borrowMapper;
         this.customerService = customerService;
+        this.fineBusinessRules = fineBusinessRules;
         this.fineService = fineService;
     }
 
@@ -42,8 +46,17 @@ public class BorrowService {
         Customer customer = customerService.getCustomerById(borrowDto.getCustomerId());
         borrowBusinessRules.ensureBorrowLimitNotExceeded(borrowDto.getCustomerId(), customer.getMemberStatus());
         borrowBusinessRules.ensureSameBookNotAlreadyBorrowed(borrowDto.getCustomerId(), borrowDto.getBookCopyId());
+        fineBusinessRules.customerCannotBorrowOrReservationWhenHasUnpaidFine(borrowDto.getCustomerId());
+
+        // TODO:
+        // Kitap ACTIVE mi, availableCopies > 0 mu? → ret değilse → devam
+
         Borrow borrow = borrowMapper.createBorrowRequestToBorrow(borrowDto);
+        borrow.setDueDate(borrowBusinessRules.calculateDueDate(borrowDto.getBorrDate(), customer.getMemberStatus()));
+
         borrowRepository.save(borrow);
+
+        // TODO: Kitap kopyasının availableCopies - 1 yapılması
 
         return borrowMapper.borrowToCreatedBorrowResponse(borrow);
     }
@@ -55,13 +68,16 @@ public class BorrowService {
         borrow = borrowMapper.updateBorrowRequestToBorrow(borrowDto);
         borrowRepository.save(borrow);
 
-        // TODO:
-        // // Check if the book is returned late and create a fine if necessary
+        // TODO: Check if the book is returned late and create a fine if necessary
         // if (borrow.getReturnDate() != null &&
         // borrow.getReturnDate().after(borrow.getDueDate())) {
-        // fineService.createFine(borrow, null); // FineType can be determined based on
-        // your logic
+        // fineService.createFine(borrow, null);
         // }
+
+        // TODO: Available copies +1 yapılması
+
+        // TODO: Check if there are any active reservations, if there is one create
+        // borrow for the customer and decrease available copies
 
         return borrowMapper.borrowToUpdatedBorrowResponse(borrow);
     }

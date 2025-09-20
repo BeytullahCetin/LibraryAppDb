@@ -48,6 +48,7 @@ public class ReservationService {
 	@Scheduled(fixedRate = 6000)
 	public void cancelExpiredReservations() {
 		// log.info("The time is now {}", dateFormat.format(new Date()));
+		// TODO: refactor with a query
 		List<Reservation> reservations = reservationRepostiory.findAll();
 		Date now = new Date();
 		for (Reservation reservation : reservations) {
