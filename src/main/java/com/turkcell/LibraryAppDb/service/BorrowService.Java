@@ -27,13 +27,15 @@ public class BorrowService {
     private final BorrowBusinessRules borrowBusinessRules;
     private final BorrowMapper borrowMapper;
     private final CustomerService customerService;
+    private final FineService fineService;
 
     public BorrowService(BorrowRepository borrowRepository, BorrowBusinessRules borrowBusinessRules,
-            BorrowMapper borrowMapper, CustomerService customerService) {
+            BorrowMapper borrowMapper, CustomerService customerService, FineService fineService) {
         this.borrowRepository = borrowRepository;
         this.borrowBusinessRules = borrowBusinessRules;
         this.borrowMapper = borrowMapper;
         this.customerService = customerService;
+        this.fineService = fineService;
     }
 
     public CreatedBorrowResponse add(@Valid CreateBorrowRequest borrowDto) {
@@ -42,8 +44,6 @@ public class BorrowService {
         borrowBusinessRules.ensureSameBookNotAlreadyBorrowed(borrowDto.getCustomerId(), borrowDto.getBookCopyId());
         Borrow borrow = borrowMapper.createBorrowRequestToBorrow(borrowDto);
         borrowRepository.save(borrow);
-
-        
 
         return borrowMapper.borrowToCreatedBorrowResponse(borrow);
     }
@@ -54,6 +54,15 @@ public class BorrowService {
         Borrow borrow = borrowRepository.findById(id).get();
         borrow = borrowMapper.updateBorrowRequestToBorrow(borrowDto);
         borrowRepository.save(borrow);
+
+        // TODO:
+        // // Check if the book is returned late and create a fine if necessary
+        // if (borrow.getReturnDate() != null &&
+        // borrow.getReturnDate().after(borrow.getDueDate())) {
+        // fineService.createFine(borrow, null); // FineType can be determined based on
+        // your logic
+        // }
+
         return borrowMapper.borrowToUpdatedBorrowResponse(borrow);
     }
 
