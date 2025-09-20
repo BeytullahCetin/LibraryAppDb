@@ -2,6 +2,7 @@ package com.turkcell.LibraryAppDb.rules;
 
 import org.springframework.stereotype.Component;
 
+import com.turkcell.LibraryAppDb.entity.Customer;
 import com.turkcell.LibraryAppDb.entity.enums.MemberStatus;
 import com.turkcell.LibraryAppDb.repository.CustomerRepository;
 
@@ -14,10 +15,9 @@ public class CustomerBusinessRules {
 		this.customerRepository = customerRepository;
 	}
 
-	public void ensureCustomerExists(int id) {
-		if (!customerRepository.existsById(id)) {
-			throw new IllegalArgumentException("Müşteri bulunamadı.");
-		}
+	public Customer customerShouldExistWithGivenId(int id) {
+		return customerRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Müşteri bulunamadı."));
 	}
 
 	public void ensureEmailUnique(String email) {

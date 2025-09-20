@@ -36,7 +36,7 @@ public class CustomerService {
 	}
 
 	public CreatedCustomerResponse add(@Valid CreateCustomerRequest customerDto) {
-        // Kurallar: email benzersiz olmalı
+		// Kurallar: email benzersiz olmalı
 		customerBusinessRules.ensureEmailUnique(customerDto.getEmail());
 
 		CustomerMapper customerMapper = CustomerMapper.INSTANCE;
@@ -48,31 +48,27 @@ public class CustomerService {
 	}
 
 	public GetByIdCustomerResponse getById(int id) {
-        // Kurallar: müşteri var mı?
-		customerBusinessRules.ensureCustomerExists(id);
-
-		Customer customer = customerRepository.findById(id).get();
+		// Kurallar: müşteri var mı?
+		Customer customer = customerBusinessRules.customerShouldExistWithGivenId(id);
 		return new GetByIdCustomerResponse(customer.getName(), customer.getPhone(), customer.getEmail());
 	}
 
 	public Customer getCustomerById(int id) {
 		return customerRepository.findById(id).get();
 	}
-	
+
 	public UpdatedCustomerResponse update(int id, @Valid UpdateCustomerRequest customerDto) {
-        // Kurallar: müşteri var mı?
-		customerBusinessRules.ensureCustomerExists(id);
+		// Kurallar: müşteri var mı?
+		Customer customer = customerBusinessRules.customerShouldExistWithGivenId(id);
 
-		Customer customer = customerRepository.findById(id).get();
-
-        // Kurallar: email değişiyorsa benzersiz olmalı
+		// Kurallar: email değişiyorsa benzersiz olmalı
 		String oldEmail = customer.getEmail();
 		String newEmail = customerDto.getEmail();
 		if (newEmail != null && (oldEmail == null || !oldEmail.equalsIgnoreCase(newEmail))) {
 			customerBusinessRules.ensureEmailUnique(newEmail);
 		}
 
-        // Alanları güncelle (mapper'a gerek olmadan sadece değişen alanlar)
+		// Alanları güncelle (mapper'a gerek olmadan sadece değişen alanlar)
 		customer.setName(customerDto.getName());
 		customer.setPhone(customerDto.getPhone());
 		customer.setEmail(customerDto.getEmail());
@@ -84,9 +80,7 @@ public class CustomerService {
 	}
 
 	public DeletedCustomerResponse delete(int id) {
-		customerBusinessRules.ensureCustomerExists(id);
-
-		Customer customer = customerRepository.findById(id).get();
+		Customer customer = customerBusinessRules.customerShouldExistWithGivenId(id);
 		customerRepository.deleteById(id);
 		return new DeletedCustomerResponse(customer.getName());
 	}
@@ -101,9 +95,7 @@ public class CustomerService {
 
 	// PATCH /api/members/{id}/status?value=...
 	public UpdatedCustomerResponse updateStatus(int id, MemberStatus value) {
-		customerBusinessRules.ensureCustomerExists(id);
-
-		Customer customer = customerRepository.findById(id).get();
+		Customer customer = customerBusinessRules.customerShouldExistWithGivenId(id);
 		customer.setMemberStatus(value);
 		customerRepository.save(customer);
 
@@ -113,9 +105,7 @@ public class CustomerService {
 
 	// GET /api/members/{id}/fines?isPaid=false
 	public List<GetFineByCustomerIdResponse> getFinesByCustomerIdAndIsPaid(int id, boolean isPaid) {
-		customerBusinessRules.ensureCustomerExists(id);
-
-		Customer customer = customerRepository.findById(id).get();
+		Customer customer = customerBusinessRules.customerShouldExistWithGivenId(id);
 		FineMapper fineMapper = FineMapper.INSTANCE;
 
 		return customer.getBorrows().stream()
