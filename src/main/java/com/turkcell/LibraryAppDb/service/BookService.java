@@ -1,5 +1,8 @@
 package com.turkcell.LibraryAppDb.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,10 +20,6 @@ import com.turkcell.LibraryAppDb.rules.BookBusinessRules;
 
 import jakarta.validation.Valid;
 
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Validated
 public class BookService {
@@ -31,10 +30,10 @@ public class BookService {
 	private final BookCopyService bookCopyService;
 
 	public BookService(BookRepository bookRepository,
-					   LanguageService languageService,
-					   PublisherService publisherService,
-					   BookBusinessRules bookBusinessRules,
-					   BookCopyService bookCopyService) {
+			LanguageService languageService,
+			PublisherService publisherService,
+			BookBusinessRules bookBusinessRules,
+			BookCopyService bookCopyService) {
 		this.bookRepository = bookRepository;
 		this.languageService = languageService;
 		this.publisherService = publisherService;
@@ -57,21 +56,19 @@ public class BookService {
 		Publisher publisher = publisherService
 				.findById(bookDto.getPublisherId())
 				.orElseThrow(() -> new IllegalArgumentException("Yayınevi bulunamadı."));
-				
+
 		bookRepository.save(book);
 		return new CreatedBookResponse(book.getTitle(), book.getIsbn(), book.getPageCount(), book.getPublishDate(),
 				publisher.getName(), language.getName());
 	}
 
 	public GetByIdBookResponse getById(int id) {
-		bookBusinessRules.ensureBookExists(id);
-		Book book = bookRepository.findById(id).get();
+		Book book = bookBusinessRules.bookShouldExistWithGivenId(id);
 		return new GetByIdBookResponse(book.getTitle(), book.getIsbn(), book.getPageCount(), book.getPublishDate());
 	}
 
 	public UpdatedBookResponse update(int id, @Valid UpdateBookRequest bookDto) {
-		bookBusinessRules.ensureBookExists(id);
-		Book book = bookRepository.findById(id).get();
+		Book book = bookBusinessRules.bookShouldExistWithGivenId(id);
 
 		Language language = languageService
 				.findById(bookDto.getLanguageId())
@@ -93,22 +90,21 @@ public class BookService {
 	}
 
 	public DeletedBookResponse delete(int id) {
-		bookBusinessRules.ensureBookExists(id);
-		Book book = bookRepository.findById(id).get();
+		Book book = bookBusinessRules.bookShouldExistWithGivenId(id);
 		bookRepository.deleteById(id);
 		return new DeletedBookResponse(book.getTitle());
 	}
 
 	// PATCH /api/books/{id}/copies?delta=...
 	public void updateCopies(int id, int delta) {
-		bookBusinessRules.ensureBookExists(id);
-		Book book = bookRepository.findById(id).get();
-		if (delta == 0) return;
+		Book book = bookBusinessRules.bookShouldExistWithGivenId(id);
+		if (delta == 0)
+			return;
 
 		if (delta > 0) {
 			bookCopyService.createCopies(book, delta);
 		} else {
-            int removeCount = Math.abs(delta);
+			int removeCount = Math.abs(delta);
 			bookBusinessRules.ensureCanRemoveCopies(id, removeCount);
 			bookCopyService.removeAvailableCopies(id, removeCount);
 		}
@@ -131,7 +127,8 @@ public class BookService {
 		if (author != null && !author.isBlank()) {
 			books = books.stream()
 					.filter(b -> b.getAuthors() != null && b.getAuthors().stream()
-							.anyMatch(a -> a.getName() != null && a.getName().toLowerCase().contains(author.toLowerCase())))
+							.anyMatch(a -> a.getName() != null
+									&& a.getName().toLowerCase().contains(author.toLowerCase())))
 					.collect(Collectors.toList());
 		}
 		if (available != null) {
@@ -147,4 +144,3 @@ public class BookService {
 				.collect(Collectors.toList());
 	}
 }
-

@@ -1,8 +1,8 @@
 package com.turkcell.LibraryAppDb.rules;
 
-import com.turkcell.LibraryAppDb.entity.Book;
 import org.springframework.stereotype.Component;
 
+import com.turkcell.LibraryAppDb.entity.Book;
 import com.turkcell.LibraryAppDb.repository.BookRepository;
 
 @Component
@@ -16,10 +16,9 @@ public class BookBusinessRules {
 		this.bookRepository = bookRepository;
 	}
 
-	public void ensureBookExists(int id) {
-		if (!bookRepository.existsById(id)) {
-			throw new IllegalArgumentException("Book bulunamadı.");
-		}
+	public Book bookShouldExistWithGivenId(int id) {
+		return bookRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Book bulunamadı."));
 	}
 
 	public void ensureIsbnUnique(String isbn) {
