@@ -60,6 +60,10 @@ public class ReservationService {
 		}
 	}
 
+	public void save(Reservation reservation) {
+		reservationRepostiory.save(reservation);
+	}
+
 	public CreatedReservationResponse reserve(@Valid CreateReservationRequest request) {
 
 		ReservationMapper reservationMapper = ReservationMapper.INSTANCE;

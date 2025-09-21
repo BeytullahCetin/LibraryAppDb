@@ -15,6 +15,12 @@ public class ReservationBusinessRules {
 		this.reservationRepostiory = reservationRepostiory;
 	}
 
+	public Reservation getReservationWithBookId(int bookId) {
+		return reservationRepostiory
+				.findTop1ByBook_Id(bookId)
+				.orElse(null);
+	}
+
 	public Reservation reservationShouldExistWithGivenId(int id) {
 		return reservationRepostiory.findById(id)
 				.orElseThrow(() -> new IllegalArgumentException("Reservation not found with id: " + id));

@@ -1,5 +1,6 @@
 package com.turkcell.LibraryAppDb.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -14,14 +15,17 @@ import com.turkcell.LibraryAppDb.dto.borrow.response.GetByIdBorrowResponse;
 import com.turkcell.LibraryAppDb.dto.borrow.response.UpdatedBorrowResponse;
 import com.turkcell.LibraryAppDb.entity.Borrow;
 import com.turkcell.LibraryAppDb.entity.Customer;
+import com.turkcell.LibraryAppDb.entity.Reservation;
 import com.turkcell.LibraryAppDb.entity.BookCopy;
 import com.turkcell.LibraryAppDb.mapper.BorrowMapper;
 import com.turkcell.LibraryAppDb.repository.BorrowRepository;
 import com.turkcell.LibraryAppDb.rules.BorrowBusinessRules;
 import com.turkcell.LibraryAppDb.rules.FineBusinessRules;
+import com.turkcell.LibraryAppDb.rules.ReservationBusinessRules;
 import com.turkcell.LibraryAppDb.rules.BookCopyBusinessRules;
 import com.turkcell.LibraryAppDb.entity.enums.BookStatus;
 import com.turkcell.LibraryAppDb.entity.enums.FineType;
+import com.turkcell.LibraryAppDb.entity.enums.ReservationStatus;
 
 import jakarta.validation.Valid;
 
@@ -36,10 +40,13 @@ public class BorrowService {
     private final FineService fineService;
     private final BookCopyBusinessRules bookCopyBusinessRules;
     private final BookCopyService bookCopyService;
+    private final ReservationBusinessRules reservationBusinessRules;
+    private final ReservationService reservationService;
 
     public BorrowService(BorrowRepository borrowRepository, BorrowBusinessRules borrowBusinessRules,
             BorrowMapper borrowMapper, CustomerService customerService, FineBusinessRules fineBusinessRules,
-            FineService fineService, BookCopyBusinessRules bookCopyBusinessRules, BookCopyService bookCopyService) {
+            FineService fineService, BookCopyBusinessRules bookCopyBusinessRules, BookCopyService bookCopyService,
+            ReservationBusinessRules reservationBusinessRules, ReservationService reservationService) {
         this.borrowRepository = borrowRepository;
         this.borrowBusinessRules = borrowBusinessRules;
         this.borrowMapper = borrowMapper;
@@ -48,6 +55,8 @@ public class BorrowService {
         this.fineService = fineService;
         this.bookCopyBusinessRules = bookCopyBusinessRules;
         this.bookCopyService = bookCopyService;
+        this.reservationBusinessRules = reservationBusinessRules;
+        this.reservationService = reservationService;
     }
 
     public CreatedBorrowResponse add(@Valid CreateBorrowRequest borrowDto) {
@@ -59,12 +68,12 @@ public class BorrowService {
         BookCopy bookCopy = bookCopyBusinessRules.ensureBookCopyAvailable(borrowDto.getBookId());
         bookCopy.setBookStatus(BookStatus.BORROWED);
         bookCopyService.save(bookCopy);
-        
+
         Borrow borrow = borrowMapper.createBorrowRequestToBorrow(borrowDto);
         borrow.setBookCopy(bookCopy);
         borrow.setDueDate(borrowBusinessRules.calculateDueDate(borrowDto.getBorrDate(), customer.getMemberStatus()));
         borrowRepository.save(borrow);
-        
+
         return borrowMapper.borrowToCreatedBorrowResponse(borrow);
     }
 
@@ -77,27 +86,43 @@ public class BorrowService {
 
         // Check if the book is returned late and create a fine if necessary
         if (borrow.getReturnDate() != null && borrow.getDueDate() != null &&
-            borrow.getReturnDate().after(borrow.getDueDate())) {
+                borrow.getReturnDate().after(borrow.getDueDate())) {
             fineService.createFine(borrow, FineType.LATE);
         }
-        //DONE: damage ve lost için fine oluşturulacak
+
+        // DONE: damage ve lost için fine oluşturulacak
         if (borrowDto.isDamage()) {
             fineService.createFine(borrow, FineType.DAMAGE);
         }
+
         if (borrowDto.isLost()) {
             fineService.createFine(borrow, FineType.LOST);
         }
+
         // Available copies +1 yapılması
         // Kitap kopyasının durumunu AVAILABLE olarak güncelle
         if (borrow.getBookCopy() != null) {
             BookCopy returnedCopy = bookCopyBusinessRules.bookCopyMustExist(borrow.getBookCopy().getId());
             returnedCopy.setBookStatus(BookStatus.AVAILABLE);
             bookCopyService.save(returnedCopy);
-        }
 
-        // Check if there are any active reservations, if there is one create
-        // borrow for the customer and decrease available copies
-        // Not implemented: Reservation logic is not present in the current codebase.
+            Reservation reservation = reservationBusinessRules.getReservationWithBookId(returnedCopy.getBook().getId());
+            if (reservation != null) {
+                Borrow borrowFromReservation = new Borrow();
+                borrowFromReservation.setCustomer(reservation.getCustomer());
+                borrowFromReservation.setBookCopy(returnedCopy);
+                borrowFromReservation.setBorrDate(new Date());
+                borrowFromReservation.setDueDate(
+                        borrowBusinessRules.calculateDueDate(new Date(), reservation.getCustomer().getMemberStatus()));
+                borrowRepository.save(borrowFromReservation);
+
+                reservation.setReservationStatus(ReservationStatus.COMPLETED);
+                reservationService.save(reservation);
+
+                returnedCopy.setBookStatus(BookStatus.BORROWED);
+                bookCopyService.save(returnedCopy);
+            }
+        }
 
         return borrowMapper.borrowToUpdatedBorrowResponse(borrow);
     }
