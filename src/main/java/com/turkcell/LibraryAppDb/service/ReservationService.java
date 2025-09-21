@@ -47,7 +47,8 @@ public class ReservationService {
 
 	@Scheduled(fixedRate = 6000)
 	public void cancelExpiredReservations() {
-		List<Reservation> reservations = reservationRepostiory.getExpiredReservations(new Date());
+		List<Reservation> reservations = reservationRepostiory
+				.findByReservationStatusAndExpireAtAfter(ReservationStatus.ACTIVE, new Date());
 		for (Reservation reservation : reservations) {
 			reservation.setReservationStatus(ReservationStatus.EXPIRED);
 			reservationRepostiory.save(reservation);

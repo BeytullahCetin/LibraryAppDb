@@ -1,5 +1,6 @@
 package com.turkcell.LibraryAppDb.repository;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,9 @@ public interface ReservationRepostiory extends JpaRepository<Reservation, Intege
 
 	Optional<Reservation> findTop1ByBook_Id(int bookId);
 
-	@Query("SELECT r FROM Reservation r WHERE r.reservationStatus = 'ACTIVE' AND r.expireAt < :now")
-	List<Reservation> getExpiredReservations(Date now);
+	// @Query("SELECT r FROM Reservation r WHERE r.reservationStatus = 'ACTIVE' AND
+	// r.expireAt < :now")
+	// List<Reservation> getExpiredReservations(Date now);
+
+	List<Reservation> findByReservationStatusAndExpireAtAfter(ReservationStatus status, Date now);
 }
