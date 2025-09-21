@@ -56,24 +56,15 @@ public class BorrowService {
         borrowBusinessRules.ensureSameBookNotAlreadyBorrowed(borrowDto.getCustomerId(), borrowDto.getBookId());
         fineBusinessRules.customerCannotBorrowOrReservationWhenHasUnpaidFine(borrowDto.getCustomerId());
 
-        // TODO:
-        // Kitap ACTIVE mi, availableCopies > 0 mu? → ret değilse → devam
-        //borrowDTO neden bookcopyid geliyor? 
-        // Kitap kopyasının aktif ve ödünç verilebilir olup olmadığını kontrol et
         BookCopy bookCopy = bookCopyBusinessRules.ensureBookCopyAvailable(borrowDto.getBookId());
-
-        
-
-        
-
-        // Kitap kopyasının durumunu BORROWED olarak güncelle
         bookCopy.setBookStatus(BookStatus.BORROWED);
-        
         bookCopyService.save(bookCopy);
+        
         Borrow borrow = borrowMapper.createBorrowRequestToBorrow(borrowDto);
         borrow.setBookCopy(bookCopy);
         borrow.setDueDate(borrowBusinessRules.calculateDueDate(borrowDto.getBorrDate(), customer.getMemberStatus()));
         borrowRepository.save(borrow);
+        
         return borrowMapper.borrowToCreatedBorrowResponse(borrow);
     }
 
