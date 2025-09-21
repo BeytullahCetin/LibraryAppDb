@@ -71,6 +71,7 @@ public class BorrowService {
         
         bookCopyService.save(bookCopy);
         Borrow borrow = borrowMapper.createBorrowRequestToBorrow(borrowDto);
+        borrow.setBookCopy(bookCopy);
         borrow.setDueDate(borrowBusinessRules.calculateDueDate(borrowDto.getBorrDate(), customer.getMemberStatus()));
         borrowRepository.save(borrow);
         return borrowMapper.borrowToCreatedBorrowResponse(borrow);
@@ -88,7 +89,7 @@ public class BorrowService {
             borrow.getReturnDate().after(borrow.getDueDate())) {
             fineService.createFine(borrow, FineType.LATE);
         }
-        //TODO: damage ve lost için fine oluşturulacak
+        //DONE: damage ve lost için fine oluşturulacak
         if (borrowDto.isDamage()) {
             fineService.createFine(borrow, FineType.DAMAGE);
         }
