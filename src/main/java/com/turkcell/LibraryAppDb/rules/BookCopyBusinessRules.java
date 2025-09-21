@@ -2,10 +2,13 @@ package com.turkcell.LibraryAppDb.rules;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.turkcell.LibraryAppDb.entity.BookCopy;
 import com.turkcell.LibraryAppDb.entity.enums.BookStatus;
 import com.turkcell.LibraryAppDb.repository.BookCopyRepository;
 
+@Component
 public class BookCopyBusinessRules {
 	private final BookCopyRepository bookCopyRepository;
 
@@ -20,7 +23,7 @@ public class BookCopyBusinessRules {
 		}
 		BookCopy copy = copies.get(0);
 		return copy;
-		
+
 	}
 
 	public BookCopy bookCopyMustExist(int bookCopyId) {
