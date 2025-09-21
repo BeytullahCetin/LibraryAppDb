@@ -29,7 +29,7 @@ public class Reservation {
 	@JoinColumn(name = "book_id")
 	private Book book;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date expireAt;
 	private ReservationStatus reservationStatus;
 

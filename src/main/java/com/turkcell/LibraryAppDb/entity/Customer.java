@@ -26,7 +26,7 @@ public class Customer {
 	private String email;
 	private MemberStatus memberStatus;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date registerDate;
 
 	@OneToMany(mappedBy = "customer")

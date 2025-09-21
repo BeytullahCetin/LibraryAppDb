@@ -21,7 +21,7 @@ public class Review {
 	private int id;
 	private String review;
 	private int rating;
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date date;
 
 	@ManyToOne

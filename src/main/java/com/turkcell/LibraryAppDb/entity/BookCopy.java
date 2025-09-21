@@ -23,8 +23,8 @@ public class BookCopy {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
-	@Temporal(TemporalType.DATE)
+
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date acquisionDate;
 	private BookStatus bookStatus;
 

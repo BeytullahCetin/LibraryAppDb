@@ -21,13 +21,13 @@ public class Borrow {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date borrDate;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date dueDate;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date returnDate;
 
 	@ManyToOne

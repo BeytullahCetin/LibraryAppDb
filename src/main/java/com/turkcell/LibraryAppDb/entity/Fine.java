@@ -24,10 +24,10 @@ public class Fine {
 
 	private float amount;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date issueDate;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date paymentDate;
 
 	private FineType fineType;
