@@ -13,7 +13,7 @@ public class CreateBorrowRequest {
     @NotNull
     private int customerId;
     @NotNull
-    private int bookCopyId;
+    private int bookId;
 
     public Date getBorrDate() {
         return borrDate;
@@ -47,11 +47,11 @@ public class CreateBorrowRequest {
         this.customerId = customerId;
     }
 
-    public int getBookCopyId() {
-        return bookCopyId;
+    public int getBookId() {
+        return bookId;
     }
 
-    public void setBookCopyId(int bookCopyId) {
-        this.bookCopyId = bookCopyId;
+    public void setBookId(int bookId) {
+        this.bookId = bookId;
     }
 }
