@@ -9,7 +9,6 @@ import com.turkcell.LibraryAppDb.repository.BookRepository;
 public class BookBusinessRules {
 
 	private final BookRepository bookRepository;
-	// TODO: Add BoookCopyService
 	// private final BookCopyRepository bookCopyRepository;
 
 	public BookBusinessRules(BookRepository bookRepository) {

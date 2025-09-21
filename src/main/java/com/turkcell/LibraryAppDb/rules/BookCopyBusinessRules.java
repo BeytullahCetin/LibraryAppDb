@@ -1,5 +1,7 @@
 package com.turkcell.LibraryAppDb.rules;
 
+import java.util.List;
+
 import com.turkcell.LibraryAppDb.entity.BookCopy;
 import com.turkcell.LibraryAppDb.entity.enums.BookStatus;
 import com.turkcell.LibraryAppDb.repository.BookCopyRepository;
@@ -11,19 +13,19 @@ public class BookCopyBusinessRules {
 		this.bookCopyRepository = bookCopyRepository;
 	}
 
-	public void ensureBookCopyAvailable(int bookCopyId) {
-		BookCopy copy = bookCopyRepository.findById(bookCopyId)
-				.orElseThrow(() -> new IllegalArgumentException("Kopya bulunamadı."));
-
-		if (copy.getBookStatus() != BookStatus.AVAILABLE) {
-			throw new IllegalStateException("Seçilen kopya şu anda müsait değil.");
+	public BookCopy ensureBookCopyAvailable(int bookId) {
+		List<BookCopy> copies = bookCopyRepository.findByBook_IdAndBookStatus(bookId, BookStatus.AVAILABLE);
+		if (copies == null || copies.isEmpty()) {
+			throw new IllegalArgumentException("Müsait kopya bulunamadı.");
 		}
+		BookCopy copy = copies.get(0);
+		return copy;
+		
 	}
 
-	public void bookCopyMustExist(int bookCopyId) {
-		if (!bookCopyRepository.existsById(bookCopyId)) {
-			throw new IllegalArgumentException("Kopya bulunamadı.");
-		}
+	public BookCopy bookCopyMustExist(int bookCopyId) {
+		return bookCopyRepository.findById(bookCopyId)
+				.orElseThrow(() -> new IllegalArgumentException("Kopya bulunamadı."));
 	}
 
 	public void ensureCopiesConsistency(int bookId) {

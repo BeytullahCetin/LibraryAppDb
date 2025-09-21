@@ -10,13 +10,15 @@ import com.turkcell.LibraryAppDb.entity.Book;
 import com.turkcell.LibraryAppDb.entity.BookCopy;
 import com.turkcell.LibraryAppDb.entity.enums.BookStatus;
 import com.turkcell.LibraryAppDb.repository.BookCopyRepository;
+import com.turkcell.LibraryAppDb.rules.BookCopyBusinessRules;
 
 @Service
 public class BookCopyService {
 
 	private final BookCopyRepository bookCopyRepository;
-
-	public BookCopyService(BookCopyRepository bookCopyRepository) {
+	private final BookCopyBusinessRules bookCopyBusinessRules;
+	public BookCopyService(BookCopyRepository bookCopyRepository, BookCopyBusinessRules bookCopyBusinessRules) {
+		this.bookCopyBusinessRules = bookCopyBusinessRules;
 		this.bookCopyRepository = bookCopyRepository;
 	}
 
@@ -39,4 +41,13 @@ public class BookCopyService {
 	public long countAvailableByBookId(int bookId) {
 		return bookCopyRepository.countByBook_IdAndBookStatus(bookId, BookStatus.AVAILABLE);
 	}
+
+	public BookCopy findById(int bookCopyId) {
+		return bookCopyBusinessRules.bookCopyMustExist(bookCopyId);
+	}
+
+	public void save(BookCopy bookCopy) {
+		bookCopyRepository.save(bookCopy);
+	}
+
 }

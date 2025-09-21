@@ -14,10 +14,12 @@ import com.turkcell.LibraryAppDb.dto.borrow.response.GetByIdBorrowResponse;
 import com.turkcell.LibraryAppDb.dto.borrow.response.UpdatedBorrowResponse;
 import com.turkcell.LibraryAppDb.entity.Borrow;
 import com.turkcell.LibraryAppDb.entity.Customer;
+import com.turkcell.LibraryAppDb.entity.BookCopy;
 import com.turkcell.LibraryAppDb.mapper.BorrowMapper;
 import com.turkcell.LibraryAppDb.repository.BorrowRepository;
 import com.turkcell.LibraryAppDb.rules.BorrowBusinessRules;
 import com.turkcell.LibraryAppDb.rules.FineBusinessRules;
+import com.turkcell.LibraryAppDb.rules.BookCopyBusinessRules;
 
 import jakarta.validation.Valid;
 
@@ -30,16 +32,20 @@ public class BorrowService {
     private final CustomerService customerService;
     private final FineBusinessRules fineBusinessRules;
     private final FineService fineService;
+    private final BookCopyBusinessRules bookCopyBusinessRules;
+    private final BookCopyService bookCopyService;
 
     public BorrowService(BorrowRepository borrowRepository, BorrowBusinessRules borrowBusinessRules,
             BorrowMapper borrowMapper, CustomerService customerService, FineBusinessRules fineBusinessRules,
-            FineService fineService) {
+            FineService fineService, BookCopyBusinessRules bookCopyBusinessRules, BookCopyService bookCopyService) {
         this.borrowRepository = borrowRepository;
         this.borrowBusinessRules = borrowBusinessRules;
         this.borrowMapper = borrowMapper;
         this.customerService = customerService;
         this.fineBusinessRules = fineBusinessRules;
         this.fineService = fineService;
+        this.bookCopyBusinessRules = bookCopyBusinessRules;
+        this.bookCopyService = bookCopyService;
     }
 
     public CreatedBorrowResponse add(@Valid CreateBorrowRequest borrowDto) {
@@ -50,13 +56,19 @@ public class BorrowService {
 
         // TODO:
         // Kitap ACTIVE mi, availableCopies > 0 mu? → ret değilse → devam
+        // Kitap kopyasının aktif ve ödünç verilebilir olup olmadığını kontrol et
+        bookCopyBusinessRules.ensureBookCopyAvailable(borrowDto.getBookCopyId());
 
         Borrow borrow = borrowMapper.createBorrowRequestToBorrow(borrowDto);
         borrow.setDueDate(borrowBusinessRules.calculateDueDate(borrowDto.getBorrDate(), customer.getMemberStatus()));
 
         borrowRepository.save(borrow);
 
-        // TODO: Kitap kopyasının availableCopies - 1 yapılması
+        // Kitap kopyasının durumunu BORROWED olarak güncelle
+        bookCopyBusinessRules.bookCopyMustExist(borrowDto.getBookCopyId());
+        BookCopy bookCopy = bookCopyService.findById(borrowDto.getBookCopyId());
+        bookCopy.setBookStatus(com.turkcell.LibraryAppDb.entity.enums.BookStatus.BORROWED);
+        bookCopyBusinessRules.bookCopyRepository.save(bookCopy);
 
         return borrowMapper.borrowToCreatedBorrowResponse(borrow);
     }

@@ -34,7 +34,7 @@ public class BorrowBusinessRules {
 	}
 
 	public void ensureSameBookNotAlreadyBorrowed(int customerId, int bookId) {
-		if (borrowRepository.existsByCustomer_IdAndBookCopy_Book_Id(customerId, bookId)) {
+		if (borrowRepository.existsByCustomer_IdAndBook_Id(customerId, bookId)) {
 			throw new IllegalStateException("Müşteri zaten bu kitabı ödünç almış.");
 		}
 	}
