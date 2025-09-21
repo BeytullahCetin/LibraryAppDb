@@ -15,6 +15,9 @@ public class UpdateBorrowRequest {
     @NotNull
     private int bookCopyId;
 
+    boolean isDamage;
+    boolean isLost;
+
     public Date getBorrDate() {
         return borrDate;
     }
@@ -53,5 +56,21 @@ public class UpdateBorrowRequest {
 
     public void setBookCopyId(int bookCopyId) {
         this.bookCopyId = bookCopyId;
+    }
+
+    public boolean isDamage() {
+        return isDamage;
+    }
+
+    public void setDamage(boolean isDamage) {
+        this.isDamage = isDamage;
+    }
+    
+    public boolean isLost() {
+        return isLost;
+    }
+
+    public void setLost(boolean isLost) {
+        this.isLost = isLost;
     }
 }

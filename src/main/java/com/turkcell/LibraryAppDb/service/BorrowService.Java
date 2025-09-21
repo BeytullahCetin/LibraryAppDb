@@ -20,6 +20,8 @@ import com.turkcell.LibraryAppDb.repository.BorrowRepository;
 import com.turkcell.LibraryAppDb.rules.BorrowBusinessRules;
 import com.turkcell.LibraryAppDb.rules.FineBusinessRules;
 import com.turkcell.LibraryAppDb.rules.BookCopyBusinessRules;
+import com.turkcell.LibraryAppDb.entity.enums.BookStatus;
+import com.turkcell.LibraryAppDb.entity.enums.FineType;
 
 import jakarta.validation.Valid;
 
@@ -51,25 +53,26 @@ public class BorrowService {
     public CreatedBorrowResponse add(@Valid CreateBorrowRequest borrowDto) {
         Customer customer = customerService.getCustomerById(borrowDto.getCustomerId());
         borrowBusinessRules.ensureBorrowLimitNotExceeded(borrowDto.getCustomerId(), customer.getMemberStatus());
-        borrowBusinessRules.ensureSameBookNotAlreadyBorrowed(borrowDto.getCustomerId(), borrowDto.getBookCopyId());
+        borrowBusinessRules.ensureSameBookNotAlreadyBorrowed(borrowDto.getCustomerId(), borrowDto.getBookId());
         fineBusinessRules.customerCannotBorrowOrReservationWhenHasUnpaidFine(borrowDto.getCustomerId());
 
         // TODO:
         // Kitap ACTIVE mi, availableCopies > 0 mu? → ret değilse → devam
+        //borrowDTO neden bookcopyid geliyor? 
         // Kitap kopyasının aktif ve ödünç verilebilir olup olmadığını kontrol et
-        bookCopyBusinessRules.ensureBookCopyAvailable(borrowDto.getBookCopyId());
+        BookCopy bookCopy = bookCopyBusinessRules.ensureBookCopyAvailable(borrowDto.getBookId());
 
-        Borrow borrow = borrowMapper.createBorrowRequestToBorrow(borrowDto);
-        borrow.setDueDate(borrowBusinessRules.calculateDueDate(borrowDto.getBorrDate(), customer.getMemberStatus()));
+        
 
-        borrowRepository.save(borrow);
+        
 
         // Kitap kopyasının durumunu BORROWED olarak güncelle
-        bookCopyBusinessRules.bookCopyMustExist(borrowDto.getBookCopyId());
-        BookCopy bookCopy = bookCopyService.findById(borrowDto.getBookCopyId());
-        bookCopy.setBookStatus(com.turkcell.LibraryAppDb.entity.enums.BookStatus.BORROWED);
-        bookCopyBusinessRules.bookCopyRepository.save(bookCopy);
-
+        bookCopy.setBookStatus(BookStatus.BORROWED);
+        
+        bookCopyService.save(bookCopy);
+        Borrow borrow = borrowMapper.createBorrowRequestToBorrow(borrowDto);
+        borrow.setDueDate(borrowBusinessRules.calculateDueDate(borrowDto.getBorrDate(), customer.getMemberStatus()));
+        borrowRepository.save(borrow);
         return borrowMapper.borrowToCreatedBorrowResponse(borrow);
     }
 
@@ -80,16 +83,29 @@ public class BorrowService {
         borrow = borrowMapper.updateBorrowRequestToBorrow(borrowDto);
         borrowRepository.save(borrow);
 
-        // TODO: Check if the book is returned late and create a fine if necessary
-        // if (borrow.getReturnDate() != null &&
-        // borrow.getReturnDate().after(borrow.getDueDate())) {
-        // fineService.createFine(borrow, null);
-        // }
+        // Check if the book is returned late and create a fine if necessary
+        if (borrow.getReturnDate() != null && borrow.getDueDate() != null &&
+            borrow.getReturnDate().after(borrow.getDueDate())) {
+            fineService.createFine(borrow, FineType.LATE);
+        }
+        //TODO: damage ve lost için fine oluşturulacak
+        if (borrowDto.isDamage()) {
+            fineService.createFine(borrow, FineType.DAMAGE);
+        }
+        if (borrowDto.isLost()) {
+            fineService.createFine(borrow, FineType.LOST);
+        }
+        // Available copies +1 yapılması
+        // Kitap kopyasının durumunu AVAILABLE olarak güncelle
+        if (borrow.getBookCopy() != null) {
+            BookCopy returnedCopy = bookCopyBusinessRules.bookCopyMustExist(borrow.getBookCopy().getId());
+            returnedCopy.setBookStatus(BookStatus.AVAILABLE);
+            bookCopyService.save(returnedCopy);
+        }
 
-        // TODO: Available copies +1 yapılması
-
-        // TODO: Check if there are any active reservations, if there is one create
+        // Check if there are any active reservations, if there is one create
         // borrow for the customer and decrease available copies
+        // Not implemented: Reservation logic is not present in the current codebase.
 
         return borrowMapper.borrowToUpdatedBorrowResponse(borrow);
     }
