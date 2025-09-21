@@ -56,20 +56,4 @@ public class BorrowBusinessRules {
 			throw new IllegalArgumentException("Ödünç alma bulunamadı.");
 		}
 	}
-
-	
-
-	// TODO: Servise eklenecek
-	// public void handleReturn(Borrow borrow) {
-	// if (borrow.getReturnDate() == null) {
-	// throw new IllegalArgumentException("İade tarihi zorunludur.");
-	// }
-	// // FineBusinessRulesa gidip ceza hesabı yapalım
-	// // İadeye geçelim
-	// // Kopyayı tekrar AVAILABLE yap
-
-	// copy.setBookStatus(BookStatus.AVAILABLE);
-	// bookCopyRepository.save(copy);
-	// }
-
 }

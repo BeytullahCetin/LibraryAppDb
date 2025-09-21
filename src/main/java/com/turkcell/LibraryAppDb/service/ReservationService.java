@@ -47,16 +47,10 @@ public class ReservationService {
 
 	@Scheduled(fixedRate = 6000)
 	public void cancelExpiredReservations() {
-		// log.info("The time is now {}", dateFormat.format(new Date()));
-		// TODO: refactor with a query
-		List<Reservation> reservations = reservationRepostiory.findAll();
-		Date now = new Date();
+		List<Reservation> reservations = reservationRepostiory.getExpiredReservations(new Date());
 		for (Reservation reservation : reservations) {
-			if (reservation.getReservationStatus() == ReservationStatus.ACTIVE
-					&& reservation.getExpireAt().before(now)) {
-				reservation.setReservationStatus(ReservationStatus.EXPIRED);
-				reservationRepostiory.save(reservation);
-			}
+			reservation.setReservationStatus(ReservationStatus.EXPIRED);
+			reservationRepostiory.save(reservation);
 		}
 	}
 
